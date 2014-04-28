@@ -23,6 +23,7 @@ struct timeval now;
 
 
 //inserindo uma modificacao
+//testando
 
 
 #define TIMER(name) Timer timer__(name);
