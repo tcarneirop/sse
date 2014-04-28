@@ -22,6 +22,8 @@ using namespace std;
 struct timeval now;
 
 
+//inserindo uma modificacao
+
 
 #define TIMER(name) Timer timer__(name);
 #define N 1024
