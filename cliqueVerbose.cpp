@@ -291,36 +291,74 @@ void cliqueNormal(){
 
 
 	while(i>=0){
-	
+		contador = 0;
+
 		colunaPrimeiroUm=isZero(R,i,&j); //j ja foi passado para a funcao
 
+
+		cout<<"\n\nLoop externo\n";
+		cout<<"\n i : "<<i<<"\nColuna primeiro um: "<< colunaPrimeiroUm<<".\n"<<"Coluna j: "<<j<<". \n";
+		cout<<"R("<<i<<"): \n";
+		//	displayBitsll(R(i,colunaPrimeiroUm));
+
+
 		while(colunaPrimeiroUm>=0){
+
+			cout<<"\nLoop interno Iteralçao: "<<contador<<"\n i : "<<i<<"\nColuna primeiro um: "<< colunaPrimeiroUm<<".\n"<<"Coluna j: "<<j<<". \n";
 
 
 			//displayBitsll(c[0]);
 			c[colunaPrimeiroUm] = c[colunaPrimeiroUm] | (1ULL<<j);
-
-			
+			cout<<"\nC: \n";
+			displayBitsll(c[0]);
+			/*
+			 * PROVISORIO!!!!!
+			 * @todo:
+			 * 	desenrolar este aco.
+			 * */
 			for(int col = 0; col<qtd_colunas;++col)
 				R(i+1,col) = R(i,col) & G(j,col);
+
+			///R(i+1,0) = R(i,0) & G(j,0);
+			//R(i+1,1) = R(i,1) & G(j,1);
+			//R(i+1,2) = R(i,2) & G(j,2);
+			//R(i+1,3) = R(i,3) & G(j,3);
 
 
 			R(i,colunaPrimeiroUm) = R(i,colunaPrimeiroUm) & ~(1ULL<<j); //retirando o um da posicao j
 
+
+			cout<<"R("<<i<<"): \n";
+			displayBitsll(R(i,colunaPrimeiroUm));
+			cout<<"R("<<i+1<<"): \n";
+			displayBitsll(R(i+1,colunaPrimeiroUm));
+
 			i++; 
 			//colunaIteracaoAnterior = colunaPrimeiroUm;
 			colunaPrimeiroUm=isZero(R,i,&j);
+
+
+
+
+			cout<<"\n i : "<<i<<"\nColuna primeiro um: "<< colunaPrimeiroUm<<".\n"<<"Coluna j: "<<j<<". \n  ";
+			contador++;
 		}
 
 		i--;
-		
+
 		/*
-		 * PROBLEMA: quando cpu == -1, c[] = c[] &~(1ULL<<j) 
-		 * deve ser feito?
+		 * PROBLEMA: este passo esta preenchendo C com zeros ou uns...
+		 *
+		 * Indice do ultimo bit 1 em c??
 		 * */
+		cout<<"\nC fora antes: \n";
+		displayBitsll(c[0]);
 
 		c[colunaPrimeiroUm] = c[colunaPrimeiroUm] & ~(1ULL<<j); //algum condicional aqui? estamos mantendo o j antigo...
 
+		cout<<"\nApos o loop interno\n i : "<<i<<"\nColuna primeiro um: "<< colunaPrimeiroUm<<".\n"<<"Coluna j: "<<j<<". \n  ";
+		cout<<"\nC fora depois: \n";
+		displayBitsll(c[0]);
 	}
 	cout<<"\n\nCLique:\n";
 	displayBitsll(c[0]);
@@ -329,11 +367,6 @@ void cliqueNormal(){
 
 
 void criarGrafoControle(){
-
-	/*
-		?
-		a-->a e' necessario?
-	*/
 
 	for(int i = 0; i<qtd_linhas; ++i)
 		for(int j = 0; j<qtd_colunas;++j)
