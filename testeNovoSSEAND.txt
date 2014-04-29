@@ -1,0 +1,13 @@
+Tempo normal: 4 usec
+
+
+
+Tempo medio normal: 0.00390625 usec
+
+
+
+Tempo SSE: 7 usec
+
+
+
+Tempo medio SSE: 0.00683594 usec

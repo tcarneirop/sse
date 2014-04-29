@@ -1,0 +1,187 @@
+
+
+
+****************************************************
+	Realizando 1024 testes em 16 elementos.
+****************************************************
+
+
+Tempo normal: 33 usec
+Tempo medio normal: 0.0322266 usec
+
+
+
+Tempo SSE com indice: 38 usec;
+Tempo medio SSE com indice: 0.0371094 usec.
+
+
+
+Tempo SSE: 38 usec
+Tempo medio SSE: 0.0371094 usec
+
+****************************************************
+	Realizando 1024 testes em 32 elementos.
+****************************************************
+
+
+Tempo normal: 66 usec
+Tempo medio normal: 0.0644531 usec
+
+
+
+Tempo SSE com indice: 74 usec;
+Tempo medio SSE com indice: 0.0722656 usec.
+
+
+
+Tempo SSE: 73 usec
+Tempo medio SSE: 0.0712891 usec
+
+
+****************************************************
+	Realizando 1024 testes em 64 elementos.
+****************************************************
+
+
+Tempo normal: 53 usec
+Tempo medio normal: 0.0517578 usec
+
+
+
+Tempo SSE com indice: 60 usec;
+Tempo medio SSE com indice: 0.0585938 usec.
+
+
+
+Tempo SSE: 59 usec
+Tempo medio SSE: 0.0576172 usec
+
+****************************************************
+	Realizando 1024 testes em 128 elementos.
+****************************************************
+
+
+Tempo normal: 260 usec
+Tempo medio normal: 0.253906 usec
+
+
+
+Tempo SSE com indice: 302 usec;
+Tempo medio SSE com indice: 0.294922 usec.
+
+
+
+Tempo SSE: 285 usec
+Tempo medio SSE: 0.27832 usec
+
+****************************************************
+	Realizando 1024 testes em 256 elementos.
+****************************************************
+
+
+Tempo normal: 221 usec
+Tempo medio normal: 0.21582 usec
+
+
+
+Tempo SSE com indice: 248 usec;
+Tempo medio SSE com indice: 0.242188 usec.
+
+
+
+Tempo SSE: 239 usec
+Tempo medio SSE: 0.233398 usec
+
+****************************************************
+	Realizando 1024 testes em 512 elementos.
+****************************************************
+
+
+Tempo normal: 1048 usec
+Tempo medio normal: 1.02344 usec
+
+
+
+Tempo SSE com indice: 1229 usec;
+Tempo medio SSE com indice: 1.2002 usec.
+
+
+
+Tempo SSE: 1136 usec
+Tempo medio SSE: 1.10938 usec
+
+
+
+****************************************************
+	Realizando 1024 testes em 1024 elementos.
+****************************************************
+
+
+Tempo normal: 2093 usec
+Tempo medio normal: 2.04395 usec
+
+
+
+Tempo SSE com indice: 2370 usec;
+Tempo medio SSE com indice: 2.31445 usec.
+
+
+
+Tempo SSE: 2273 usec
+Tempo medio SSE: 2.21973 usec
+
+****************************************************
+	Realizando 1024 testes em 2048 elementos.
+****************************************************
+
+
+Tempo normal: 4206 usec
+Tempo medio normal: 4.10742 usec
+
+
+
+Tempo SSE com indice: 3478 usec;
+Tempo medio SSE com indice: 3.39648 usec.
+
+
+
+Tempo SSE: 2492 usec
+Tempo medio SSE: 2.43359 usec
+
+****************************************************
+	Realizando 1024 testes em 4096 elementos.
+****************************************************
+
+
+Tempo normal: 8387 usec
+Tempo medio normal: 8.19043 usec
+
+
+
+Tempo SSE com indice: 5649 usec;
+Tempo medio SSE com indice: 5.5166 usec.
+
+
+
+Tempo SSE: 4098 usec
+Tempo medio SSE: 4.00195 usec
+
+****************************************************
+	Realizando 1024 testes em 8192 elementos.
+****************************************************
+
+
+Tempo normal: 13193 usec
+Tempo medio normal: 12.8838 usec
+
+
+
+Tempo SSE com indice: 8330 usec;
+Tempo medio SSE com indice: 8.13477 usec.
+
+
+
+Tempo SSE: 8310 usec
+Tempo medio SSE: 8.11523 usec
+
+
