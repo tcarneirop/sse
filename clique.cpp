@@ -28,9 +28,9 @@ using namespace std;
 
 
 
-#define N 3
+#define N 8
 
-#define qtd_vertices 4
+#define qtd_vertices 8
 #define qtd_palavrasULL 1
 //se N > 64, teremos mais uma coluna
 
@@ -223,7 +223,9 @@ void cliqueNormal(){
 	int qtd_cliques = 0;
 
 
-	for(int verticeCorrente = 0; verticeCorrente<4;++verticeCorrente){
+	for(int verticeCorrente = 0; verticeCorrente<qtd_vertices;++verticeCorrente){
+
+
 		cout<<"\nVertice corrente: "<<verticeCorrente<<"\n";
 		i=0;
 		for(j = 0; j<qtd_palavrasULL;++j)
@@ -283,17 +285,20 @@ void cliqueNormal(){
 
 			i--;
 			if(i>=0){
-				cout<<"\nClique: \n";
-				displayBitsll(c[0]);
 				++qtd_cliques;
+				cout<<"\nClique "<<qtd_cliques<<" : \n";
+				displayBitsll(c[0]);
 				c[palavraUtilizada[i]] = c[palavraUtilizada[i]] & ~(1ULL<<pilha[i]);} //algum condicional aqui? estamos mantendo o j antigo...
 
 
 
 		}
-		c[0] = c[0] & ~(1ULL<<verticeCorrente); //pois todo espaco de solucoes cuja origem eh ''vertice'' foi verificado
 		//cout<<"\nAo fim: \n";
 		//displayBitsll(c[0]);
+		c[0] = c[0] & ~(1ULL<<verticeCorrente); //pois todo espaco de solucoes cuja origem eh ''vertice'' foi verificado
+
+
+
 
 		for(int k = 0; k<qtd_vertices;++k)
 			G(k,verticeCorrente) = G(k,verticeCorrente) & ~(1ULL<<verticeCorrente);
@@ -303,7 +308,9 @@ void cliqueNormal(){
 	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<"\n";
 }
 
-
+/*
+ * Lembrando que isso so' serve se o grafo tiver ate' 63 vertices
+ * */
 
 void criarGrafoControle(){
 
@@ -312,12 +319,57 @@ void criarGrafoControle(){
 			G(i,j) = (unsigned long long)0;
 
 
+	G_line(0)= G_line(0) | (1ULL<<1);
 	G_line(0)= G_line(0) | (1ULL<<2);
 	G_line(0)= G_line(0) | (1ULL<<3);
 
 
+
+	G_line(1)= G_line(1) | (1ULL);
+	G_line(1)= G_line(1) | (1ULL<<2);
 	G_line(1)= G_line(1) | (1ULL<<3);
 
+	G_line(2)= G_line(2) | (1ULL);
+	G_line(2)= G_line(2) | (1ULL<<1);
+	G_line(2)= G_line(2) | (1ULL<<3);
+
+	G_line(3)= G_line(3) | (1ULL);
+	G_line(3)= G_line(3) | (1ULL<<2);
+	G_line(3)= G_line(3) | (1ULL<<4);
+	G_line(3)= G_line(3) | (1ULL<<5);
+
+	G_line(4)= G_line(4) | (1ULL<<3);
+	G_line(4)= G_line(4) | (1ULL<<5);
+
+	G_line(5)= G_line(5) | (1ULL<<3);
+	G_line(5)= G_line(5) | (1ULL<<4);
+	G_line(5)= G_line(5) | (1ULL<<6);
+	G_line(5)= G_line(5) | (1ULL<<7);
+
+	G_line(6)= G_line(6) | (1ULL<<5);
+	G_line(6)= G_line(6) | (1ULL<<7);
+
+	G_line(7)= G_line(7) | (1ULL<<5);
+	G_line(7)= G_line(7) | (1ULL<<6);
+
+
+
+}
+
+
+void criarGrafoControleDois(){
+
+	for(int i = 0; i<qtd_vertices; ++i)
+		for(int j = 0; j<qtd_palavrasULL;++j)
+			G(i,j) = (unsigned long long)0;
+
+
+	G_line(0)= G_line(0) | (1ULL<<1);
+	G_line(0)= G_line(0) | (1ULL<<3);
+
+
+	G_line(1)= G_line(1) | (1ULL);
+	G_line(1)= G_line(1) | (1ULL<<3);
 
 	G_line(2)= G_line(2) | (1ULL);
 	G_line(2)= G_line(2) | (1ULL<<3);
