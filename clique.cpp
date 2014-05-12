@@ -91,6 +91,30 @@ void displayBitsll(unsigned long long value){
 
 }
 
+void displayBitsCliquell(unsigned long long *clique){
+
+	unsigned long long  value;
+	const unsigned long long  SHIFT = 8 * sizeof( unsigned long long ) - 1;
+	const unsigned long long MASK = (unsigned long long)1 << SHIFT ;// joga do menos para o mais significativo
+
+	//cout<< setw(7) << value << " = ";
+
+	for(int k = 0; k<qtd_palavrasULL;++k){
+		value = clique[k];
+		for (unsigned long long c = 1; c <= SHIFT +1; c++){
+			cout << (value & MASK ? '1' : '0');
+			value <<= 1;
+			if (c % 8 == 0)
+				cout << ' ';
+
+		}
+		cout<< endl;
+	}
+
+	cout << endl;
+
+}
+
 
 void preencherGrafoll(){
 
@@ -120,6 +144,20 @@ int isZero(unsigned long long *R, int i,int *j){
 
 	return -1;
 
+}
+
+int isZero(unsigned long long *vertice, int *j){
+
+
+	for(int k = 0; k<qtd_palavrasULL; ++k){
+		if(vertice[k]>0){
+			*j = __builtin_ffsll(vertice[k]) -1;
+			return k;
+		}
+
+	}
+
+	return -1;
 
 }
 
@@ -181,6 +219,28 @@ void teste(unsigned long long *R){
 
 }
 
+
+void verticesDaClique(unsigned long long *vertices){
+
+	int palavraPrimeiroUm;
+	int j;
+
+
+	do{
+		palavraPrimeiroUm = isZero(vertices,&j);
+		if(palavraPrimeiroUm>-1){
+
+			cout<<palavraPrimeiroUm*ULLONG+j;
+			cout<<" ";
+			vertices[palavraPrimeiroUm] = vertices[palavraPrimeiroUm] &  ~(1ULL<<j);
+		}
+	}
+	while(palavraPrimeiroUm> -1);
+
+
+
+}
+
 void inicializarVetorCll(){
 
 	for(int i = 0; i<qtd_palavrasULL;++i)
@@ -192,16 +252,10 @@ void inicializarVetorCll(){
 
 void cliqueNormal(){
 
-	/*TODO:
-	 * Lembrando que isso so' serve se o grafo tiver ate' 63 vertices, algum problema com os ands...
-	 * 	-Corrigido o problema do c[]=c[] &~ do fim (OK);
-	 * 	-Corrigido o problema do c[] =c[] | verticeCorrente,quando vc > 64;
-	 *
-	 * 	??E os ands?
-	 *
-	 * */
 
-
+/*
+ * Aparentemente ok
+ * */
 	register int i;
 	register int j;
 	int palavraPrimeiroUm;
@@ -211,9 +265,9 @@ void cliqueNormal(){
 	int palavraRaiz;
 	int verticeEmJ;
 	int posicaoRaiz;
-	int tamanhoMaiorClique = -1;
+	int tamanhoCliqueCorrente, maiorClique = -1;
 
-
+	unsigned long long vetorMaiorClique[qtd_palavrasULL];
 
 	inicializarVetorCll();
 
@@ -232,6 +286,8 @@ void cliqueNormal(){
 
 		c[palavraRaiz] = c[palavraRaiz] | (1ULL<<posicaoRaiz);
 
+		tamanhoCliqueCorrente = 1;
+
 		while(i>=0){
 
 			palavraPrimeiroUm=isZero(R,i,&j);
@@ -240,13 +296,10 @@ void cliqueNormal(){
 			while(palavraPrimeiroUm>=0){
 
 
-				//	cout<<"\n\nLoop externo\n";
-			//	cout<<"\n i : "<<i<<"\nPalavra primeiro um: "<< palavraPrimeiroUm<<".\n"<<"Coluna j: "<<j<<". \n";
-
-
 				palavraUtilizada[i] = palavraPrimeiroUm;
 
 				c[palavraPrimeiroUm] = c[palavraPrimeiroUm] | (1ULL<<j);
+				tamanhoCliqueCorrente++;
 
 				pilha[i] = j;
 
@@ -256,22 +309,6 @@ void cliqueNormal(){
 
 				verticeEmJ = palavraPrimeiroUm*ULLONG+j;
 
-
-
-				//				cout<<"\n\n\nR("<<i<<",0): \n";
-				//				displayBitsll(R(0,0));
-				//				cout<<"R("<<i<<",1): \n";
-				//				displayBitsll(R(0,1));
-				////
-				//				cout<<"G("<<verticeEmJ<<",0): \n";
-				//				displayBitsll(G(verticeEmJ,0));
-				//				cout<<"G("<<verticeEmJ<<",1): \n";
-				//				displayBitsll(G(verticeEmJ,1));
-				////
-				//				cout<<"R("<<i+1<<",0): \n";
-				//				displayBitsll(R(0,0)&G(verticeEmJ,0));
-				//				cout<<"R("<<i+1<<",1): \n";
-				//				displayBitsll(R(0,1)&G(verticeEmJ,1));
 
 
 				for(int col = 0; col<qtd_palavrasULL;++col){
@@ -286,18 +323,30 @@ void cliqueNormal(){
 
 			}
 
-			if(i>tamanhoMaiorClique)
-				tamanhoMaiorClique = (i+2);
+			if(tamanhoCliqueCorrente>maiorClique){
+
+				maiorClique = tamanhoCliqueCorrente;
+				memcpy(vetorMaiorClique,c,sizeof(c));
+
+			}
+
 			i--;
 
 			if(i>=0){
+
+//				cout<<"\nClique "<<qtd_cliques<<" : \n";
+//				displayBitsll(c[0]);
+//				displayBitsll(c[1]);
+//				displayBitsll(c[2]);
+
 				++qtd_cliques;
-				cout<<"\nClique "<<qtd_cliques<<" : \n";
-				displayBitsll(c[0]);
-				displayBitsll(c[1]);
-				displayBitsll(c[2]);
+				cout<<"\nClique: \n";
+				displayBitsCliquell(c);
+				cout<<"\n";
 				c[palavraUtilizada[i]] = c[palavraUtilizada[i]] & ~(1ULL<<pilha[i]);
-			} //algum condicional aqui? estamos mantendo o j antigo...
+				tamanhoCliqueCorrente--;
+
+			}
 		}
 
 		c[palavraRaiz] = c[palavraRaiz] & ~(1ULL<<posicaoRaiz);
@@ -314,7 +363,8 @@ void cliqueNormal(){
 
 
 	}
-	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<". \n Tamanho maior clique: "<<tamanhoMaiorClique<<". \n";
+	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<endl<<"Tamanho maior clique: "<<maiorClique<<endl;
+	verticesDaClique(vetorMaiorClique);
 
 }
 
@@ -482,7 +532,7 @@ void criarGrafoControleCinco(){
 
 	G(0,2) = G(0,2) | (1ULL); //0-128
 	G(0,2) = G(0,2) | (1ULL<<1); //0-129
- 	G(0,2) = G(0,2) | (1ULL<<2);   //0-130
+	G(0,2) = G(0,2) | (1ULL<<2);   //0-130
 	G(0,2) = G(0,2) | (1ULL<<3); //0 - 131
 
 
@@ -525,22 +575,22 @@ void criarGrafoControleCinco(){
 
 	G(128,0) = G(128,0) | (1ULL); //128-0
 	G(128,2) = G(128,2) | (1ULL<<1); //128-129
- 	G(128,2) = G(128,2) | (1ULL<<2);   //128-130
+	G(128,2) = G(128,2) | (1ULL<<2);   //128-130
 	G(128,2) = G(128,2) | (1ULL<<3); //128 - 131
 
 	G(129,0) = G(129,0) | (1ULL); //129-128
 	G(129,2) = G(129,2) | (1ULL); //129-128
- 	G(129,2) = G(129,2) | (1ULL<<2);   //128-130
+	G(129,2) = G(129,2) | (1ULL<<2);   //128-130
 	G(129,2) = G(129,2) | (1ULL<<3); //128 - 131
 
 	G(130,0) = G(130,0) | (1ULL); //130-128
 	G(130,2) = G(130,2) | (1ULL); //130-128
- 	G(130,2) = G(130,2) | (1ULL<<1);   //130-129
+	G(130,2) = G(130,2) | (1ULL<<1);   //130-129
 	G(130,2) = G(130,2) | (1ULL<<3); //128 - 131
 
 	G(131,0) = G(131,0) | (1ULL); //130-128
 	G(131,2) = G(131,2) | (1ULL); //130-128
- 	G(131,2) = G(131,2) | (1ULL<<1);   //130-129
+	G(131,2) = G(131,2) | (1ULL<<1);   //130-129
 	G(131,2) = G(131,2) | (1ULL<<2); //128 - 131
 
 
@@ -553,7 +603,7 @@ int main(){
 	//criarGrafoControleQuatro(); //66-4
 	//criarGrafoControleDois();
 
-	criarGrafoControleCinco();
+	criarGrafoControleCinco(); //133-3ull-49cl-5maior
 
 	cout<<"\n\nQuantidade de vertices: "<<qtd_vertices<<" . Quantidade de palavras ULL: "<<qtd_palavrasULL<<" .\n";
 
