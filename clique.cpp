@@ -27,9 +27,10 @@ using namespace std;
 
 
 #define ULLONG 64
-#define N 28
+#define N 25
 
-#define qtd_vertices 28
+#define qtd_vertices 25
+
 #define qtd_palavrasULL 2
 //se N > 64, teremos mais uma coluna
 
@@ -272,15 +273,11 @@ void cliqueNormal(){
 
 	unsigned long long vetorMaiorClique[qtd_palavrasULL];
 
-	unsigned int inicio;
-	unsigned int fim;
 
 
 
 	inicializarVetorCll();
 
-	gettimeofday(&now, NULL);
-	inicio= now.tv_usec;
 
 	for(int verticeCorrente = 0; verticeCorrente<qtd_vertices;++verticeCorrente){
 
@@ -374,11 +371,10 @@ void cliqueNormal(){
 
 
 	}
-	gettimeofday(&now, NULL);
-	fim= now.tv_usec;
+
 	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<endl<<"Tamanho maior clique: "<<maiorClique<<endl;
 	verticesDaClique(vetorMaiorClique);
-	cout<<"\n\nTempo decorrido: "<<(fim-inicio)<<"\n\n";
+
 
 }
 
@@ -405,17 +401,14 @@ void cliqueSSE(){
 
 	__m128i* R_SSE;
 	__m128i* grafoSSE;
-	//__m128i* R_proximoNivel;
+	__m128i* R_proximoNivel;
 
 	unsigned long long vetorMaiorClique[qtd_palavrasULL];
-	unsigned int inicio;
-	unsigned int fim;
-	//unsigned int tempo;
+
 
 	inicializarVetorCll();
 
-	gettimeofday(&now, NULL);
-	inicio= now.tv_usec;
+
 	for(int verticeCorrente = 0; verticeCorrente<qtd_vertices;++verticeCorrente){
 
 		i=0;
@@ -462,35 +455,36 @@ void cliqueSSE(){
 				verticeEmJ = palavraPrimeiroUm*ULLONG+j;
 
 
-//				//R_SSE = (__m128i*)&R_line(i); (ok)
-//				grafoSSE = (__m128i*)&G_line(verticeEmJ);
-//				R_proximoNivel = (__m128i*)&R((i+1),0);
-//
-//
-//				for(int col = 0; col<(qtd_palavrasULL/2);++col){
-//
-//					//_mm_store_si128(&R_proximoNivel[col],_mm_and_si128(grafoSSE[col],R_SSE[col]));
-//
-//					R_proximoNivel[col] = _mm_and_si128(grafoSSE[col],R_SSE[col]);
-//					//R((i+1),col) = R(i,col) & G(verticeEmJ,col);
-//
-//
-//				}
+				R_SSE = (__m128i*)&R_line(i);
+				grafoSSE = (__m128i*)&G_line(verticeEmJ);
+				R_proximoNivel = (__m128i*)&R_line((i+1));
 
 
+				for(int col = 0; col<(qtd_palavrasULL/2);++col){
 
-				for(int col = 0; col<qtd_palavrasULL;++col){
+					//_mm_store_si128(&R_proximoNivel[col],_mm_and_si128(grafoSSE[col],R_SSE[col]));
 
+					R_proximoNivel[col] = _mm_and_si128(grafoSSE[col],R_SSE[col]);
+					//_mm_store_si128(&R_proximoNivel[col],_mm_and_si128(grafoSSE[col],R_SSE[col]));
+					//R((i+1),col) = R(i,col) & G(verticeEmJ,col);
 
-					R((i+1),col) = R(i,col) & G(verticeEmJ,col);
 
 				}
+
+
+
+//
+//				for(int col = 0; col<qtd_palavrasULL;++col){
+//
+//
+//					R((i+1),col) = R(i,col) & G(verticeEmJ,col);
+//
+//				}
 
 
 				i++;
 
 				palavraPrimeiroUm=isZero(R,i,&j);
-
 
 			}
 
@@ -534,11 +528,10 @@ void cliqueSSE(){
 
 
 	}
-	gettimeofday(&now, NULL);
-	fim= now.tv_usec;
+
 	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<endl<<"Tamanho maior clique: "<<maiorClique<<endl;
 	verticesDaClique(vetorMaiorClique);
-	cout<<"\n\nTempo decorrido: "<<(fim-inicio)<<"\n\n";
+
 
 }
 
@@ -814,8 +807,8 @@ int main(){
 
 	//imprimirGrafoll();
 
-	cliqueNormal();
-	//cliqueSSE();
+	//cliqueNormal();
+	cliqueSSE();
 
 
 	return 0;
