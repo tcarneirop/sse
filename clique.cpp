@@ -27,11 +27,11 @@ using namespace std;
 
 
 #define ULLONG 64
-#define N 230
+#define N 400
 
-#define qtd_vertices 230
+#define qtd_vertices 400
 
-#define qtd_palavrasULL 4
+#define qtd_palavrasULL 8
 //se N > 64, teremos mais uma coluna
 
 
@@ -522,16 +522,6 @@ void cliqueSSE(){
 				}
 
 
-
-				//
-				//				for(int col = 0; col<qtd_palavrasULL;++col){
-				//
-				//
-				//					R((i+1),col) = R(i,col) & G(verticeEmJ,col);
-				//
-				//				}
-
-
 				i++;
 
 				palavraPrimeiroUm=isZero(R,i,&j);
@@ -587,12 +577,170 @@ void cliqueSSE(){
 
 
 
+void DFSBnBSSE(){
+
+	cout<<"\nDFS-BnB SSE\n";
+
+	/*
+	 * Aparentemente ok
+	 * @todo:
+	 * 	-tirar a modificacao no grafo. Nao entendi como fazer.
+	 * */
+	register int i;
+	register int j;
+	int palavraPrimeiroUm;
+	int pilha[qtd_vertices];
+	int palavraUtilizada[qtd_vertices];
+	unsigned long long  qtd_cliques = 0;
+	int palavraRaiz;
+	int verticeEmJ;
+	int posicaoRaiz;
+	int tamanhoCliqueCorrente, maiorClique = -1;
+	//int quantidadeDeUns;
+
+	__m128i* R_SSE;
+	__m128i* grafoSSE;
+	__m128i* R_proximoNivel;
+
+	unsigned long long vetorMaiorClique[qtd_palavrasULL];
 
 
 
-void cliqueNormalDFSBnB(){
 
-	cout<<"\nClique BnB\n";
+	inicializarVetorCll();
+
+
+	for(int verticeCorrente = 0; verticeCorrente<qtd_vertices;++verticeCorrente){
+
+
+		i=0;
+
+		palavraRaiz  = (int)(verticeCorrente/ULLONG);
+		posicaoRaiz = verticeCorrente % ULLONG;
+
+
+
+		/*
+		 * Poda inicial
+		 * */
+		if((qtdUns(G,verticeCorrente)+1) < maiorClique){ //poda ao escolher uma nova raiz
+
+			//	cout<<endl<<verticeCorrente<<" Podado, apenas "<< qtdUns(G,verticeCorrente)<<" uns em seu R\n";
+
+			for(int k = 0; k<qtd_vertices;++k)
+				G(k,palavraRaiz) = G(k,palavraRaiz) & ~(1ULL<<posicaoRaiz);
+			continue;
+		}
+
+
+		R_SSE = (__m128i*)&R_line(i);
+		grafoSSE = (__m128i*)&G_line(verticeCorrente);
+
+
+		for(int col = 0; col<(qtd_palavrasULL/2); col++){
+			_mm_store_si128(&R_SSE[col],grafoSSE[col]);
+			//R(i,j) = G(verticeCorrente,j);
+			//R_SSE[col] = grafoSSE[col];
+		}
+
+		c[palavraRaiz] = c[palavraRaiz] | (1ULL<<posicaoRaiz);
+
+		tamanhoCliqueCorrente = 1;
+
+		while(i>=0){
+
+			palavraPrimeiroUm=isZero(R,i,&j);
+
+
+			while(palavraPrimeiroUm>=0){
+
+
+				palavraUtilizada[i] = palavraPrimeiroUm;
+
+				c[palavraPrimeiroUm] = c[palavraPrimeiroUm] | (1ULL<<j);
+				tamanhoCliqueCorrente++;
+
+				pilha[i] = j;
+
+
+				R(i,palavraPrimeiroUm) = R(i,palavraPrimeiroUm) & ~(1ULL<<j);
+
+
+				verticeEmJ = palavraPrimeiroUm*ULLONG+j;
+
+				R_SSE = (__m128i*)&R_line(i);
+				grafoSSE = (__m128i*)&G_line(verticeEmJ);
+				R_proximoNivel = (__m128i*)&R_line((i+1));
+
+
+				for(int col = 0; col<(qtd_palavrasULL/2);++col){
+
+					//_mm_store_si128(&R_proximoNivel[col],_mm_and_si128(grafoSSE[col],R_SSE[col]));
+
+					R_proximoNivel[col] = _mm_and_si128(grafoSSE[col],R_SSE[col]);
+					//_mm_store_si128(&R_proximoNivel[col],_mm_and_si128(grafoSSE[col],R_SSE[col]));
+					//R((i+1),col) = R(i,col) & G(verticeEmJ,col);
+
+
+				}
+
+				if(qtdUns(R,i+1)>(maiorClique-tamanhoCliqueCorrente)){//tcc = (i+1). tmc = L --> L-i+1
+					i++;
+					palavraPrimeiroUm=isZero(R,i,&j);
+				}//nao podado
+				else{
+					c[palavraPrimeiroUm] = c[palavraPrimeiroUm] & ~(1ULL<<j);
+					tamanhoCliqueCorrente--;
+					palavraPrimeiroUm=isZero(R,i,&j);
+					//c[palavraPrimeiroUm] = c[palavraPrimeiroUm] & ~(1ULL<<j);
+
+				}//podado
+
+
+			}//end while, clique maximal feito.
+
+			if(tamanhoCliqueCorrente>maiorClique){
+
+				maiorClique = tamanhoCliqueCorrente;
+				memcpy(vetorMaiorClique,c,sizeof(c));
+
+			}
+
+			i--;
+
+			if(i>=0){
+
+				++qtd_cliques;;
+				c[palavraUtilizada[i]] = c[palavraUtilizada[i]] & ~(1ULL<<pilha[i]);
+				tamanhoCliqueCorrente--;
+
+			}
+		}
+
+		c[palavraRaiz] = c[palavraRaiz] & ~(1ULL<<posicaoRaiz);
+
+
+		/*@TODO: OK, verificar...
+		 *
+		 *Nao entendi como retirar a etapa abaixo.
+		 *
+		 **/
+
+		for(int k = 0; k<qtd_vertices;++k)
+			G(k,palavraRaiz) = G(k,palavraRaiz) & ~(1ULL<<posicaoRaiz);
+
+
+	}
+
+	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<endl<<"Tamanho maior clique: "<<maiorClique<<endl;
+	verticesDaClique(vetorMaiorClique);
+
+
+}//end of dfsbnb
+
+void DFSBnBNormal(){
+
+	cout<<"\nDFS-BnB  normal\n";
 
 	/*
 	 * Aparentemente ok
@@ -631,9 +779,6 @@ void cliqueNormalDFSBnB(){
 		palavraRaiz  = (int)(verticeCorrente/ULLONG);
 		posicaoRaiz = verticeCorrente % ULLONG;
 
-		//cout<<"\nVertice corrente: "<<verticeCorrente<<"\n";
-
-		/////////////////////////
 		/*
 		 * Poda
 		 * */
@@ -706,16 +851,8 @@ void cliqueNormalDFSBnB(){
 			i--;
 
 			if(i>=0){
-
-				//				cout<<"\nClique "<<qtd_cliques<<" : \n";
-				//				displayBitsll(c[0]);
-				//				displayBitsll(c[1]);
-				//				displayBitsll(c[2]);
-
 				++qtd_cliques;
-				//cout<<"\nClique: \n";
-				//displayBitsCliquell(c);
-				//cout<<"\n";
+
 				c[palavraUtilizada[i]] = c[palavraUtilizada[i]] & ~(1ULL<<pilha[i]);
 				tamanhoCliqueCorrente--;
 
@@ -742,6 +879,7 @@ void cliqueNormalDFSBnB(){
 
 
 }
+
 
 
 void criarGrafoControle(){
@@ -1030,31 +1168,44 @@ void criarGrafoControleAleatorio(){
 
 }
 
+
 /*
  * by  mischasan http://mischasan.wordpress.com
  * */
 int sse_bitcount(__m128i x)
 {
-    __m128i m0 = (__v2di) { 0x5555555555555555ULL, 0x5555555555555555ULL };
-    x = _mm_add_epi64(_mm_and_si128(m0, x), _mm_and_si128(m0, _mm_srli_epi64(x, 1)));
+	__m128i m0 = (__v2di) { 0x5555555555555555ULL, 0x5555555555555555ULL };
+	x = _mm_add_epi64(_mm_and_si128(m0, x), _mm_and_si128(m0, _mm_srli_epi64(x, 1)));
 
-    __m128i m1 = (__v2di) { 0x3333333333333333ULL, 0x3333333333333333ULL };
-    x = _mm_add_epi64(_mm_and_si128(m1, x), _mm_and_si128(m1, _mm_srli_epi64(x, 2)));
+	__m128i m1 = (__v2di) { 0x3333333333333333ULL, 0x3333333333333333ULL };
+	x = _mm_add_epi64(_mm_and_si128(m1, x), _mm_and_si128(m1, _mm_srli_epi64(x, 2)));
 
-    __m128i m2 = (__v2di) { 0x0F0F0F0F0F0F0F0FULL, 0x0F0F0F0F0F0F0F0FULL };
-    x = _mm_add_epi64(_mm_and_si128(m2, x), _mm_and_si128(m2, _mm_srli_epi64(x, 4)));
+	__m128i m2 = (__v2di) { 0x0F0F0F0F0F0F0F0FULL, 0x0F0F0F0F0F0F0F0FULL };
+	x = _mm_add_epi64(_mm_and_si128(m2, x), _mm_and_si128(m2, _mm_srli_epi64(x, 4)));
 
-    __m128i m3 = (__v2di) { 0x00FF00FF00FF00FFULL, 0x00FF00FF00FF00FFULL };
-    x = _mm_add_epi64(_mm_and_si128(m3, x), _mm_and_si128(m3, _mm_srli_epi64(x, 8)));
+	__m128i m3 = (__v2di) { 0x00FF00FF00FF00FFULL, 0x00FF00FF00FF00FFULL };
+	x = _mm_add_epi64(_mm_and_si128(m3, x), _mm_and_si128(m3, _mm_srli_epi64(x, 8)));
 
-    __m128i m4 = (__v2di) { 0x0000FFFF0000FFFFULL, 0x0000FFFF0000FFFFULL };
-    x = _mm_add_epi64(_mm_and_si128(m4, x), _mm_and_si128(m4, _mm_srli_epi64(x,16)));
+	__m128i m4 = (__v2di) { 0x0000FFFF0000FFFFULL, 0x0000FFFF0000FFFFULL };
+	x = _mm_add_epi64(_mm_and_si128(m4, x), _mm_and_si128(m4, _mm_srli_epi64(x,16)));
 
-    x = _mm_add_epi32(_mm_shuffle_epi32(x, 0x4E), x);
-    return (int)__builtin_ia32_vec_ext_v4si((__v4si)x, 0)
-               +__builtin_ia32_vec_ext_v4si((__v4si)x, 2);
+	x = _mm_add_epi32(_mm_shuffle_epi32(x, 0x4E), x);
+	return (int)__builtin_ia32_vec_ext_v4si((__v4si)x, 0)
+			+__builtin_ia32_vec_ext_v4si((__v4si)x, 2);
 }
 
+void testeSSEBitcount(){
+
+
+	unsigned long long vet[2];
+	__m128i valor;
+	__m128i* ptr1 = (__m128i*)vet;
+
+	_mm_store_si128(&valor,ptr1[0]);
+	vet[0]= 255ULL;
+	vet[1] = 255ULL;
+	cout<<"\n quantidade de zeros no __m128i: "<< sse_bitcount(valor);
+}
 
 int main(){
 
@@ -1080,24 +1231,30 @@ int main(){
 	//imprimirGrafoll();
 
 	//cliqueNormal();
+
 	{
-		TIMER("Clique sse");
-		cliqueSSE();
+		TIMER("\nClique normal");
+		cliqueNormal();
 	}
+
 	//teste2(G);
 	memcpy(G, G_BK, sizeof(G_BK));
 
 	{
-		TIMER("Clique normal");
-		cliqueNormal();
+		TIMER("\nClique sse");
+		cliqueSSE();
 	}
 
 	memcpy(G, G_BK, sizeof(G_BK));
 	{
-		TIMER("clique BnB");
-		cliqueNormalDFSBnB();
+		TIMER("\nDFS-BnB Normal ");
+		DFSBnBNormal();
 	}
-
+	memcpy(G, G_BK, sizeof(G_BK));
+	{
+		TIMER("\nDFS-BnB SSE");
+		DFSBnBSSE();
+	}
 
 	return 0;
 }
