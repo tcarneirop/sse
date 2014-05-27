@@ -27,17 +27,39 @@ using namespace std;
 
 
 #define ULLONG 64
-#define N 25
+#define N 230
 
-#define qtd_vertices 25
+#define qtd_vertices 230
 
-#define qtd_palavrasULL 2
+#define qtd_palavrasULL 4
 //se N > 64, teremos mais uma coluna
+
+
+class Timer
+{
+public:
+	Timer(const std::string& name): name_ (name),start_ (clock())
+{
+}
+	~Timer()
+	{
+		double elapsed = (double(clock() - start_) / double(CLOCKS_PER_SEC));
+		cout << name_ << ": " << int(elapsed * 1000) << "ms" << endl;
+	}
+private:
+	string name_;
+	clock_t start_;
+};
+
+#define TIMER(name) Timer timer__(name);
+
 
 struct timeval now;
 
 
 unsigned long long G[qtd_vertices*qtd_palavrasULL] __attribute__ ((aligned(16)));
+
+unsigned long long G_BK[qtd_vertices*qtd_palavrasULL] __attribute__ ((aligned(16)));
 
 unsigned long long R[qtd_vertices*qtd_palavrasULL]__attribute__ ((aligned(16))) ;
 
@@ -220,6 +242,31 @@ void teste(unsigned long long *R){
 }
 
 
+int qtdUns(unsigned long long *R, int i){
+
+	int qtd=0;
+	for(int k = 0; k<qtd_palavrasULL; ++k){
+
+		qtd += __builtin_popcountll(R(i,k));
+
+	}
+
+	return qtd;
+
+}
+
+
+
+void teste2(unsigned long long *R){
+
+	for(int i = 0; i<qtd_vertices;++i){
+
+		cout<<"\nLinha "<<i<<" possui "<<qtdUns(R,i)<<" uns.\n";
+	}
+
+
+}
+
 void verticesDaClique(unsigned long long *vertices){
 
 	int palavraPrimeiroUm;
@@ -292,7 +339,8 @@ void cliqueNormal(){
 		for(j = 0; j<qtd_palavrasULL;++j)
 			R(i,j) = G(verticeCorrente,j);
 
-		c[palavraRaiz] = c[palavraRaiz] | (1ULL<<posicaoRaiz);
+		//c[palavraRaiz] = c[palavraRaiz] | (1ULL<<posicaoRaiz);
+		c[palavraRaiz] |= (1ULL<<posicaoRaiz);
 
 		tamanhoCliqueCorrente = 1;
 
@@ -306,14 +354,16 @@ void cliqueNormal(){
 
 				palavraUtilizada[i] = palavraPrimeiroUm;
 
-				c[palavraPrimeiroUm] = c[palavraPrimeiroUm] | (1ULL<<j);
+				//c[palavraPrimeiroUm] = c[palavraPrimeiroUm] | (1ULL<<j);
+				c[palavraPrimeiroUm] |= (1ULL<<j);
+
 				tamanhoCliqueCorrente++;
 
 				pilha[i] = j;
 
 
-				R(i,palavraPrimeiroUm) = R(i,palavraPrimeiroUm) & ~(1ULL<<j); //retirando o um da posicao j
-
+				//R(i,palavraPrimeiroUm) = R(i,palavraPrimeiroUm) & ~(1ULL<<j); //retirando o um da posicao j
+				R(i,palavraPrimeiroUm) &=  ~(1ULL<<j);
 
 				verticeEmJ = palavraPrimeiroUm*ULLONG+j;
 
@@ -351,13 +401,13 @@ void cliqueNormal(){
 				//cout<<"\nClique: \n";
 				//displayBitsCliquell(c);
 				//cout<<"\n";
-				c[palavraUtilizada[i]] = c[palavraUtilizada[i]] & ~(1ULL<<pilha[i]);
+				c[palavraUtilizada[i]] &=  ~(1ULL<<pilha[i]);
 				tamanhoCliqueCorrente--;
 
 			}
 		}
 
-		c[palavraRaiz] = c[palavraRaiz] & ~(1ULL<<posicaoRaiz);
+		c[palavraRaiz] &=  ~(1ULL<<posicaoRaiz);
 
 
 		/*@TODO: OK, verificar...
@@ -367,7 +417,7 @@ void cliqueNormal(){
 		 **/
 
 		for(int k = 0; k<qtd_vertices;++k)
-			G(k,palavraRaiz) = G(k,palavraRaiz) & ~(1ULL<<posicaoRaiz);
+			G(k,palavraRaiz) &=  ~(1ULL<<posicaoRaiz);
 
 
 	}
@@ -473,13 +523,13 @@ void cliqueSSE(){
 
 
 
-//
-//				for(int col = 0; col<qtd_palavrasULL;++col){
-//
-//
-//					R((i+1),col) = R(i,col) & G(verticeEmJ,col);
-//
-//				}
+				//
+				//				for(int col = 0; col<qtd_palavrasULL;++col){
+				//
+				//
+				//					R((i+1),col) = R(i,col) & G(verticeEmJ,col);
+				//
+				//				}
 
 
 				i++;
@@ -536,6 +586,162 @@ void cliqueSSE(){
 }
 
 
+
+
+
+
+void cliqueNormalDFSBnB(){
+
+	cout<<"\nClique BnB\n";
+
+	/*
+	 * Aparentemente ok
+	 * @todo:
+	 * 	-tirar a modificacao no grafo. Nao entendi como fazer.
+	 * */
+	register int i;
+	register int j;
+	int palavraPrimeiroUm;
+	int pilha[qtd_vertices];
+	int palavraUtilizada[qtd_vertices];
+	unsigned long long  qtd_cliques = 0;
+	int palavraRaiz;
+	int verticeEmJ;
+	int posicaoRaiz;
+	int tamanhoCliqueCorrente, maiorClique = -1;
+	//int quantidadeDeUns;
+
+	unsigned long long vetorMaiorClique[qtd_palavrasULL];
+
+
+
+
+	inicializarVetorCll();
+
+
+	for(int verticeCorrente = 0; verticeCorrente<qtd_vertices;++verticeCorrente){
+
+		/*
+		 * Antes de copiar, farei o seguinte:
+		 * verificarei, para cada palavra, a quantidade de zeros do vertice em questao.
+		 *
+		 * * */
+		i=0;
+
+		palavraRaiz  = (int)(verticeCorrente/ULLONG);
+		posicaoRaiz = verticeCorrente % ULLONG;
+
+		//cout<<"\nVertice corrente: "<<verticeCorrente<<"\n";
+
+		/////////////////////////
+		/*
+		 * Poda
+		 * */
+		if((qtdUns(G,verticeCorrente)+1) < maiorClique){ //poda ao escolher uma nova raiz
+
+			//	cout<<endl<<verticeCorrente<<" Podado, apenas "<< qtdUns(G,verticeCorrente)<<" uns em seu R\n";
+
+			for(int k = 0; k<qtd_vertices;++k)
+				G(k,palavraRaiz) = G(k,palavraRaiz) & ~(1ULL<<posicaoRaiz);
+			continue;
+		}
+
+		for(j = 0; j<qtd_palavrasULL;++j)
+			R(i,j) = G(verticeCorrente,j);
+
+		c[palavraRaiz] = c[palavraRaiz] | (1ULL<<posicaoRaiz);
+
+		tamanhoCliqueCorrente = 1;
+
+		while(i>=0){
+
+			palavraPrimeiroUm=isZero(R,i,&j);
+
+
+			while(palavraPrimeiroUm>=0){
+
+
+				palavraUtilizada[i] = palavraPrimeiroUm;
+
+				c[palavraPrimeiroUm] = c[palavraPrimeiroUm] | (1ULL<<j);
+				tamanhoCliqueCorrente++;
+
+				pilha[i] = j;
+
+
+				R(i,palavraPrimeiroUm) = R(i,palavraPrimeiroUm) & ~(1ULL<<j);
+
+
+				verticeEmJ = palavraPrimeiroUm*ULLONG+j;
+
+
+
+				for(int col = 0; col<qtd_palavrasULL;++col){
+
+					R((i+1),col) = R(i,col) & G(verticeEmJ,col);
+				}
+
+				if(qtdUns(R,i+1)>(maiorClique-tamanhoCliqueCorrente)){//tcc = (i+1). tmc = L --> L-i+1
+					i++;
+					palavraPrimeiroUm=isZero(R,i,&j);
+				}//nao podado
+				else{
+					c[palavraPrimeiroUm] = c[palavraPrimeiroUm] & ~(1ULL<<j);
+					tamanhoCliqueCorrente--;
+					palavraPrimeiroUm=isZero(R,i,&j);
+					//c[palavraPrimeiroUm] = c[palavraPrimeiroUm] & ~(1ULL<<j);
+
+				}//podado
+
+
+			}//end while, clique maximal feito.
+
+			if(tamanhoCliqueCorrente>maiorClique){
+
+				maiorClique = tamanhoCliqueCorrente;
+				memcpy(vetorMaiorClique,c,sizeof(c));
+
+			}
+
+			i--;
+
+			if(i>=0){
+
+				//				cout<<"\nClique "<<qtd_cliques<<" : \n";
+				//				displayBitsll(c[0]);
+				//				displayBitsll(c[1]);
+				//				displayBitsll(c[2]);
+
+				++qtd_cliques;
+				//cout<<"\nClique: \n";
+				//displayBitsCliquell(c);
+				//cout<<"\n";
+				c[palavraUtilizada[i]] = c[palavraUtilizada[i]] & ~(1ULL<<pilha[i]);
+				tamanhoCliqueCorrente--;
+
+			}
+		}
+
+		c[palavraRaiz] = c[palavraRaiz] & ~(1ULL<<posicaoRaiz);
+
+
+		/*@TODO: OK, verificar...
+		 *
+		 *Nao entendi como retirar a etapa abaixo.
+		 *
+		 **/
+
+		for(int k = 0; k<qtd_vertices;++k)
+			G(k,palavraRaiz) = G(k,palavraRaiz) & ~(1ULL<<posicaoRaiz);
+
+
+	}
+
+	cout<<"\n\nQtd_cliques: "<<qtd_cliques<<endl<<"Tamanho maior clique: "<<maiorClique<<endl;
+	verticesDaClique(vetorMaiorClique);
+
+
+}
 
 
 void criarGrafoControle(){
@@ -791,24 +997,106 @@ void criarGrafoControleComepleto(){
 
 }
 
+void criarGrafoControleAleatorio(){
+
+
+	int palavraVerticeJ, posicaoVerticeJ, moeda;
+
+	srand (time(NULL));
+
+	/*@todo:mudar para memset
+	 * */
+	for(int i = 0; i<qtd_vertices; ++i)
+		for(int j = 0; j<qtd_palavrasULL;++j)
+			G(i,j) = (unsigned long long)0;
+
+
+	for(int i = 0; i<qtd_vertices;++i){
+		for(int j = 0; j<qtd_vertices;++j){
+
+			moeda = rand() % 100;
+
+			if(i==j || (moeda < 50))
+				continue;
+			else{
+				palavraVerticeJ  = (int)(j/ULLONG);
+				posicaoVerticeJ = j % ULLONG;
+
+				G(i,palavraVerticeJ) |= (1ULL << posicaoVerticeJ);
+			}
+		}
+	}
+
+
+}
+
+/*
+ * by  mischasan http://mischasan.wordpress.com
+ * */
+int sse_bitcount(__m128i x)
+{
+    __m128i m0 = (__v2di) { 0x5555555555555555ULL, 0x5555555555555555ULL };
+    x = _mm_add_epi64(_mm_and_si128(m0, x), _mm_and_si128(m0, _mm_srli_epi64(x, 1)));
+
+    __m128i m1 = (__v2di) { 0x3333333333333333ULL, 0x3333333333333333ULL };
+    x = _mm_add_epi64(_mm_and_si128(m1, x), _mm_and_si128(m1, _mm_srli_epi64(x, 2)));
+
+    __m128i m2 = (__v2di) { 0x0F0F0F0F0F0F0F0FULL, 0x0F0F0F0F0F0F0F0FULL };
+    x = _mm_add_epi64(_mm_and_si128(m2, x), _mm_and_si128(m2, _mm_srli_epi64(x, 4)));
+
+    __m128i m3 = (__v2di) { 0x00FF00FF00FF00FFULL, 0x00FF00FF00FF00FFULL };
+    x = _mm_add_epi64(_mm_and_si128(m3, x), _mm_and_si128(m3, _mm_srli_epi64(x, 8)));
+
+    __m128i m4 = (__v2di) { 0x0000FFFF0000FFFFULL, 0x0000FFFF0000FFFFULL };
+    x = _mm_add_epi64(_mm_and_si128(m4, x), _mm_and_si128(m4, _mm_srli_epi64(x,16)));
+
+    x = _mm_add_epi32(_mm_shuffle_epi32(x, 0x4E), x);
+    return (int)__builtin_ia32_vec_ext_v4si((__v4si)x, 0)
+               +__builtin_ia32_vec_ext_v4si((__v4si)x, 2);
+}
+
 
 int main(){
 
+	/*@todo:
+	 * posix_memalign((void**)&a, 16,  N * sizeof(float)); e criar matrizes dinamicas na heap
+	 * explicitas alinhadas. Lembrar que podemos ter certa perda de performance.
+	 *
+	 * */
 	//preencherGrafoll();
-	//criarGrafoControle();
+	//criarGrafoControle(); //8
 	//criarGrafoControleQuatro(); //66-4
 	//criarGrafoControleDois();
 
 	//criarGrafoControleCinco(); //133-3ull-49cl-5maior
 
-	criarGrafoControleComepleto();
+	//criarGrafoControleComepleto();
 	cout<<"\n\nQuantidade de vertices: "<<qtd_vertices<<" . Quantidade de palavras ULL: "<<qtd_palavrasULL<<" .\n";
 
 
+	criarGrafoControleAleatorio();
+
+	memcpy(G_BK, G, sizeof(G));
 	//imprimirGrafoll();
 
 	//cliqueNormal();
-	cliqueSSE();
+	{
+		TIMER("Clique sse");
+		cliqueSSE();
+	}
+	//teste2(G);
+	memcpy(G, G_BK, sizeof(G_BK));
+
+	{
+		TIMER("Clique normal");
+		cliqueNormal();
+	}
+
+	memcpy(G, G_BK, sizeof(G_BK));
+	{
+		TIMER("clique BnB");
+		cliqueNormalDFSBnB();
+	}
 
 
 	return 0;
