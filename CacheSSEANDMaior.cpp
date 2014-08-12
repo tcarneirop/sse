@@ -138,9 +138,9 @@ int main() {
 	 *
 	 *
 	 */
-	unsigned long long v1[SIZE] __attribute__ ((aligned (16*(sizeof(unsigned long long)))));
-	unsigned long long v2[SIZE] __attribute__ ((aligned (16*(sizeof(unsigned long long)))));
-	unsigned long long v3[SIZE] __attribute__ ((aligned (16*(sizeof(unsigned long long)))));
+	unsigned long long v1[SIZE] __attribute__ ((aligned (16)));
+	unsigned long long v2[SIZE] __attribute__ ((aligned (16)));
+	unsigned long long v3[SIZE] __attribute__ ((aligned (16)));
 
 	for(i =0; i<SIZE;++i){
 		v1[i]=v2[i]=i;
