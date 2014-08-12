@@ -579,12 +579,6 @@ void MWNonRecursiveRussianDoll(){
 				l--;
 				profundidade++;
 
-				//				for(int col = 0; col<qtd_palavrasULL;++col)
-				//					W((profundidade+1),col) = 0ULL;
-				/*(?)
-				 * w[p++]=0 ?
-				 *
-				 * */
 
 				palavraPrimeiroUm=isZero(R,profundidade,&vertices[profundidade]);
 			}
