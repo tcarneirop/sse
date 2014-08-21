@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="false" xmlns:ct="http://www.abisource.com/changetracking.dtd" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xid-max="22" xmlns:dc="http://purl.org/dc/elements/1.1/" styles="unlocked" fileformat="1.1" xmlns:svg="http://www.w3.org/2000/svg" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.9.1" xml:space="preserve" props="dom-dir:ltr; document-footnote-restart-section:0; document-endnote-type:numeric; document-endnote-place-enddoc:1; document-endnote-initial:1; lang:pt-BR; document-endnote-restart-section:0; document-footnote-restart-page:0; document-footnote-type:numeric; document-footnote-initial:1; document-endnote-place-endsection:0">
+<!-- ======================================================================== -->
+<!-- This file is an AbiWord document.                                        -->
+<!-- AbiWord is a free, Open Source word processor.                           -->
+<!-- More information about AbiWord is available at http://www.abisource.com/ -->
+<!-- You should not edit this file by hand.                                   -->
+<!-- ======================================================================== -->
+
+<metadata>
+<m key="abiword.date_last_changed">Wed May 14 23:20:36 2014
+</m>
+<m key="abiword.generator">AbiWord</m>
+<m key="dc.creator">carneiro</m>
+<m key="dc.date">Wed May 14 23:20:36 2014
+</m>
+<m key="dc.format">application/x-abiword</m>
+</metadata>
+<rdf>
+</rdf>
+<history version="1" edit-time="1268" last-saved="1400120436" uid="8c60e6be-dbd4-11e3-87a8-f863c9990a16">
+<version id="1" started="1400120436" uid="7feba2fe-dbd7-11e3-87a8-f863c9990a16" auto="0" top-xid="22"/>
+</history>
+<styles>
+<s type="P" name="Normal" followedby="Current Settings" props="font-family:Times New Roman; margin-top:0pt; color:000000; margin-left:0pt; text-position:normal; widows:2; font-style:normal; text-indent:0in; font-variant:normal; font-weight:normal; margin-right:0pt; font-size:12pt; text-decoration:none; margin-bottom:0pt; line-height:1.0; bgcolor:transparent; text-align:left; font-stretch:normal"/>
+</styles>
+<pagesize pagetype="A4" orientation="portrait" width="210.000000" height="297.000000" units="mm" page-scale="1.000000"/>
+<section xid="5" props="page-margin-footer:0.5000in; page-margin-header:0.5000in; page-margin-right:1.0000in; page-margin-left:1.0000in; page-margin-top:1.0000in; page-margin-bottom:1.0000in">
+<p style="Normal" xid="6"><c>﻿</c></p>
+<p style="Normal" xid="1"><c>26 normal<br/>Milisec: 754<br/>Seconds: 4<br/>Total Minutes: 0.07923<br/>Total Seconds: 4.754193<br/>Total Miliseconds: 4754,193<br/><br/><br/>26 sse<br/>Milisec: 648<br/>Seconds: 4<br/>Total Minutes: 0.0774674<br/>Total Seconds: 4.6480445<br/>Total Miliseconds: 4648,0445<br/><br/>28 normal<br/>Milisec: 456<br/>Seconds: 20<br/>Total Minutes: 0.340934<br/>Total Seconds: 20.4560518<br/>Total Miliseconds: 2045,60518<br/><br/>28 sse<br/>Milisec: 992<br/>Seconds: 17<br/>Total Minutes: 0.29988186<br/>Total Seconds: 17,9929116<br/>Total Miliseconds: 1799,6929116</c></p>
+<p style="Normal" xid="2"><c></c></p>
+<p style="Normal" xid="7"><c></c></p>
+<p style="Normal" xid="12"><c>30 normal<br/>Minutes: 1<br/>Seconds: 13<br/>Milisec: 955<br/>Total Minutes: 1.232594<br/>Total Seconds: 73,9556737<br/>Total Miliseconds: 7395,56737<br/><br/>30 sse<br/>Minutes: 1<br/>Seconds: 11<br/>Milisec: 974<br/>Total Minutes: 1.19957830<br/>Total Seconds: 71,9746981<br/>Total Miliseconds: 7197,46981</c></p>
+<p style="Normal" xid="13"><c></c></p>
+<p style="Normal" xid="14"><c></c></p>
+<p style="Normal" xid="3"><c></c></p>
+<p style="Normal" xid="22"><c></c></p>
+<p style="Normal" xid="20"><c></c></p>
+<p style="Normal" xid="21"><c></c><c>﻿25 normal<br/>Seconds: 2<br/>Milisec: 604<br/>Total Minutes: 0,043408485<br/>Total Seconds: 2,6045091<br/>Total Miliseconds: 2604,5091<br/><br/>25 sse<br/>Seconds: 2<br/>Milisec: 884<br/>Total Minutes: 0,048066851<br/>Total Seconds: 2,8840111<br/>Total Miliseconds: 2884,0111<br/><br/>27 normal<br/>Seconds: 9<br/>Milisec: 461<br/>Total Minutes: 0,157688041<br/>Total Seconds: 9,4612825<br/>Total Miliseconds: 9461,2825<br/><br/>27 sse<br/>Seconds: 9<br/>Milisec: 446<br/>Total Minutes: 0,</c><a xlink:href="tel:+551574422583" xid="15"><c>1574422583</c></a><c><br/>Total Seconds: 9,4465355<br/>Total Miliseconds: 9,4465355<br/><br/>29 normal<br/>Seconds: 37<br/>Milisec: 259<br/>Total Minutes: 0,620994708<br/>Total Seconds: 37,2596825<br/>Total Miliseconds: 37259,6825<br/><br/>29 sse<br/>Seconds: 36<br/>Milisec: 47<br/>Total Minutes: 0,600798913<br/>Total Seconds: 36,0479348<br/>Total Miliseconds: 36047,9348</c></p>
+<p style="Normal" xid="17"><c></c></p>
+<p style="Normal" xid="18"><c></c></p>
+</section>
+</abiword>
